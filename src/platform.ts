@@ -65,7 +65,7 @@ export class HomebridgeRemoteControlPlatform implements DynamicPlatformPlugin {
             // generate a unique id for the accessory this should be generated from
             // something globally unique, but constant, for example, the device serial
             // number or MAC address
-            const uuid = device.name
+            const uuid = this.api.hap.uuid.generate(device.name);
 
             // see if an accessory with the same uuid has already been registered and restored from
             // the cached devices we stored in the `configureAccessory` method above
