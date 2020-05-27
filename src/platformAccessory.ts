@@ -1,5 +1,5 @@
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
-import rpio from 'rpio';
+import { Gpio } from 'onoff';
 
 import { HomebridgeRemoteControlPlatform } from './platform';
 
@@ -36,14 +36,16 @@ export class RemoteControlAccessory {
     private timeoutHandle: any;
     private config: MyAccessory;
     private delay: number;
+    private readonly relay: any;
 
     constructor(
         private readonly platform: HomebridgeRemoteControlPlatform,
         private readonly accessory: PlatformAccessory,
     ) {
-        this.config = accessory.context as MyAccessory;
+        this.config = accessory.context.device as MyAccessory;
+        this.platform.log.debug(this.config.name + ': ' + JSON.stringify(this.config));
         this.delay = (this.config.delay || DEFAULT_DELAY) * 1000
-        rpio.open(this.config.pin, rpio.OUTPUT, rpio.LOW)
+        this.relay = new Gpio(this.config.pin, 'out');
 
         // set accessory information
         this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -121,10 +123,10 @@ export class RemoteControlAccessory {
     };
 
     sendRemoteSignal() {
-        rpio.write(this.config.pin, rpio.HIGH)
+        this.relay.writeSync(1);
         this.platform.log.debug(this.config.name + ' remote pin on...');
         setTimeout(() => {
-            rpio.write(this.config.pin, rpio.LOW)
+            this.relay.writeSync(0);
             this.platform.log.debug(this.config.name + ' remote pin off...');
         }, 1000);
     }
