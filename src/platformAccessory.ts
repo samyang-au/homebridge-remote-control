@@ -1,5 +1,5 @@
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
-import { Gpio } from 'onoff';
+import rpio from 'rpio';
 
 import { HomebridgeRemoteControlPlatform } from './platform';
 
@@ -34,15 +34,16 @@ export class RemoteControlAccessory {
 
     private currentDoorState: CurrentDoorState;
     private timeoutHandle: any;
-    private readonly relay: any;
     private config: MyAccessory;
+    private delay: number;
 
     constructor(
         private readonly platform: HomebridgeRemoteControlPlatform,
         private readonly accessory: PlatformAccessory,
     ) {
         this.config = accessory.context as MyAccessory;
-        this.relay = new Gpio(this.config.pin, 'out');
+        this.delay = (this.config.delay || DEFAULT_DELAY) * 1000
+        rpio.open(this.config.pin, rpio.OUTPUT, rpio.LOW)
 
         // set accessory information
         this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -86,14 +87,14 @@ export class RemoteControlAccessory {
                 this.sendRemoteSignal();
                 if (targetState == TargetDoorState.CLOSED) {
                     this.setCurrentDoorState(CurrentDoorState.CLOSING);
-                    this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(CurrentDoorState.CLOSED), (this.config.delay || DEFAULT_DELAY) * 1000);
+                    this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(CurrentDoorState.CLOSED), this.delay);
                 }
                 break;
             case CurrentDoorState.CLOSED:
                 this.sendRemoteSignal();
                 if (targetState == TargetDoorState.OPEN) {
                     this.setCurrentDoorState(CurrentDoorState.OPENING);
-                    this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(CurrentDoorState.OPEN), (this.config.delay || DEFAULT_DELAY) * 1000);
+                    this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(CurrentDoorState.OPEN), this.delay);
                 }
                 break;
             case CurrentDoorState.OPENING:
@@ -109,7 +110,7 @@ export class RemoteControlAccessory {
                     this.sendRemoteSignal();
                     setTimeout(() => {
                         this.sendRemoteSignal();
-                        this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(targetState as any), (this.config.delay || DEFAULT_DELAY) * 1000);
+                        this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(targetState as any), this.delay);
                     }, 2000);
                 }
                 break;
@@ -120,10 +121,10 @@ export class RemoteControlAccessory {
     };
 
     sendRemoteSignal() {
-        this.relay.writeSync(1);
+        rpio.write(this.config.pin, rpio.HIGH)
         this.platform.log.debug(this.config.name + ' remote pin on...');
         setTimeout(() => {
-            this.relay.writeSync(0);
+            rpio.write(this.config.pin, rpio.LOW)
             this.platform.log.debug(this.config.name + ' remote pin off...');
         }, 1000);
     }

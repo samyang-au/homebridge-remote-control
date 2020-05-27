@@ -1,6 +1,6 @@
 {
   "name": "homebridge-remote-control",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Homebridge plugin to control remote control(s) using Raspberry Pi (or similar) output pin(s)",
   "main": "./dist/index.js",
   "engines": {
@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/samyang-au/homebridge-remote-control#readme",
   "dependencies": {
-    "onoff": "^6.0.0"
+    "rpio": "^2.1.1"
   },
   "devDependencies": {
     "@types/node": "^14.0.5",
