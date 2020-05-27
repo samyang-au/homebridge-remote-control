@@ -10,6 +10,7 @@ Sample config:
         "name": "Gate", // unique name
         "pin": 26, // the pin to turn on / off
         "delay": 10 // optional delay before gate / garage toggle the state between open and close in seconds. Default is 10
+        "defaultState": // optional, "open", "close"
     }]
 }]
 </code></pre>

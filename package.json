@@ -1,6 +1,6 @@
 {
   "name": "homebridge-remote-control",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Homebridge plugin to control remote control(s) using Raspberry Pi (or similar) output pin(s)",
   "main": "./dist/index.js",
   "engines": {
