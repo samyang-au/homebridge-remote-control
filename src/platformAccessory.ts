@@ -16,7 +16,7 @@ enum CurrentDoorState {
     STOPPED = 4,
 };
 
-const DEFAULT_DELAY = 10000;
+const DEFAULT_DELAY = 10;
 
 export interface MyAccessory {
     name: string,
@@ -86,14 +86,14 @@ export class RemoteControlAccessory {
                 this.sendRemoteSignal();
                 if (targetState == TargetDoorState.CLOSED) {
                     this.setCurrentDoorState(CurrentDoorState.CLOSING);
-                    this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(CurrentDoorState.CLOSED), this.config.delay || DEFAULT_DELAY);
+                    this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(CurrentDoorState.CLOSED), (this.config.delay || DEFAULT_DELAY) * 1000);
                 }
                 break;
             case CurrentDoorState.CLOSED:
                 this.sendRemoteSignal();
                 if (targetState == TargetDoorState.OPEN) {
                     this.setCurrentDoorState(CurrentDoorState.OPENING);
-                    this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(CurrentDoorState.OPEN), this.config.delay || DEFAULT_DELAY);
+                    this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(CurrentDoorState.OPEN), (this.config.delay || DEFAULT_DELAY) * 1000);
                 }
                 break;
             case CurrentDoorState.OPENING:
@@ -109,7 +109,7 @@ export class RemoteControlAccessory {
                     this.sendRemoteSignal();
                     setTimeout(() => {
                         this.sendRemoteSignal();
-                        this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(targetState as any), this.config.delay || DEFAULT_DELAY);
+                        this.timeoutHandle = setTimeout(() => this.setCurrentDoorState(targetState as any), (this.config.delay || DEFAULT_DELAY) * 1000);
                     }, 2000);
                 }
                 break;

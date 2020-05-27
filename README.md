@@ -3,6 +3,7 @@ Homebridge plugin to control remote control(s) using Raspberry Pi (or similar) o
 
 Sample config:
 
+<pre><code>
 "Platforms": [{
     "platform": "HomebridgeRemoteControlPlugin",
     "accessories": [{
@@ -11,3 +12,4 @@ Sample config:
         "delay": 10 // optional delay before gate / garage toggle the state between open and close in seconds. Default is 10
     }]
 }]
+</code></pre>
